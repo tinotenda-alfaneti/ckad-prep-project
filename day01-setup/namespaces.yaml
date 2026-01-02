@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    env: development
+    purpose: ckad-practice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+  labels:
+    env: production
+    purpose: ckad-practice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ops
+  labels:
+    env: operations
+    purpose: ckad-practice

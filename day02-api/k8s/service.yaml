@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-api
+  namespace: dev
+  labels:
+    app: event-api
+spec:
+  type: ClusterIP
+  selector:
+    app: event-api  # Must match pod labels
+  ports:
+  - port: 80        # Service port
+    targetPort: 8080  # Container port
+    protocol: TCP
+    name: http

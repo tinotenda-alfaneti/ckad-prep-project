@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-api
+  namespace: dev
+  labels:
+    app: event-api
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: event-api
+  template:
+    metadata:
+      labels:
+        app: event-api
+        tier: backend
+    spec:
+      containers:
+      - name: api
+        image: event-api:v1
+        imagePullPolicy: Never  # Use local image
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: MESSAGE
+          value: "Hello from CKAD Event API!"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
