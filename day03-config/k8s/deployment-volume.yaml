@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-api
+  namespace: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: event-api
+  template:
+    metadata:
+      labels:
+        app: event-api
+    spec:
+      containers:
+      - name: api
+        image: event-api:v1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        # Mount ConfigMap as files
+        - name: config-volume
+          mountPath: /config
+          readOnly: true
+        # Mount Secret as files
+        - name: secret-volume
+          mountPath: /secrets
+          readOnly: true
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      volumes:
+      # ConfigMap volume
+      - name: config-volume
+        configMap:
+          name: api-config
+      # Secret volume
+      - name: secret-volume
+        secret:
+          secretName: api-secret

@@ -1,15 +1,15 @@
 # Day 1 - Cluster, Workflow & Exam Muscle Memory
 
 ## Objectives
-- Verify MicroK8s cluster is ready
-- Enable required addons
+- Verify Kubernetes cluster is ready
+- Ensure required components are enabled
 - Create namespace structure
 - Setup kubectl shortcuts
 - Build exam-day muscle memory
 
 ## Prerequisites
-- MicroK8s installed on Raspberry Pi
-- kubectl available
+- Kubernetes cluster (local or cloud)
+- kubectl configured and available
 
 ---
 
@@ -18,42 +18,42 @@
 ### 1. Verify Cluster
 
 ```bash
-# Check MicroK8s status
-microk8s status
+# Check cluster status
+kubectl cluster-info
 
 # Check nodes
-microk8s kubectl get nodes
+kubectl get nodes
 
 # Get cluster info
-microk8s kubectl cluster-info
+kubectl cluster-info
 ```
 
-### 2. Enable Required Addons
+### 2. Verify Required Components
 
 ```bash
-# Enable DNS (required for service discovery)
-microk8s enable dns
+# Verify DNS (required for service discovery)
+kubectl get svc -n kube-system | grep dns
 
-# Enable storage (for PVCs)
-microk8s enable storage
+# Verify storage classes (for PVCs)
+kubectl get storageclass
 
-# Enable ingress (for Day 10)
-microk8s enable ingress
+# Verify ingress controller (for Day 10) - may need separate installation
+kubectl get svc -n ingress-nginx  # or your ingress namespace
 
-# Verify addons
-microk8s status
+# Verify cluster components
+kubectl get componentstatuses
 ```
 
 ### 3. Setup kubectl Alias
 
 ```bash
 # Add to ~/.bashrc or ~/.zshrc
-echo "alias k='microk8s kubectl'" >> ~/.bashrc
-echo "alias kgp='microk8s kubectl get pods'" >> ~/.bashrc
-echo "alias kgd='microk8s kubectl get deployments'" >> ~/.bashrc
-echo "alias kgs='microk8s kubectl get services'" >> ~/.bashrc
-echo "alias kd='microk8s kubectl describe'" >> ~/.bashrc
-echo "alias kdel='microk8s kubectl delete'" >> ~/.bashrc
+echo "alias k='kubectl'" >> ~/.bashrc
+echo "alias kgp='kubectl get pods'" >> ~/.bashrc
+echo "alias kgd='kubectl get deployments'" >> ~/.bashrc
+echo "alias kgs='kubectl get services'" >> ~/.bashrc
+echo "alias kd='kubectl describe'" >> ~/.bashrc
+echo "alias kdel='kubectl delete'" >> ~/.bashrc
 
 # Apply changes
 source ~/.bashrc
@@ -208,10 +208,10 @@ k apply -f namespaces.yaml
 
 ## Verification Checklist
 
-- [ ] MicroK8s is running
-- [ ] DNS addon enabled
-- [ ] Storage addon enabled
-- [ ] Ingress addon enabled
+- [ ] Kubernetes cluster is accessible
+- [ ] DNS service is running
+- [ ] Storage classes are available
+- [ ] Ingress controller is available
 - [ ] Namespaces created: dev, prod, ops
 - [ ] kubectl alias works
 - [ ] Can create pods imperatively

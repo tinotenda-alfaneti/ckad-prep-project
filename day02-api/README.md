@@ -79,11 +79,12 @@ cd ~/projects/homelab/ckad-project/day02-api
 # Build image
 docker build -t event-api:v1 .
 
-# Load into MicroK8s (Raspberry Pi)
-docker save event-api:v1 | microk8s ctr image import -
+# Make image available in cluster
+# (Push to registry or load locally depending on your setup)
+# Example: docker tag event-api:v1 your-registry/event-api:v1 && docker push your-registry/event-api:v1
 
-# Verify
-microk8s ctr images ls | grep event-api
+# Verify (if using local registry or loaded)
+kubectl run test --image=event-api:v1 --dry-run=client -o yaml
 ```
 
 ---
@@ -292,8 +293,8 @@ k get pods -n dev
 k describe pod <POD_NAME> -n dev
 # Look for: Failed to pull image "event-api:v1"
 
-# Fix: Ensure image is loaded
-docker save event-api:v1 | microk8s ctr image import -
+# Fix: Ensure image is available in cluster
+# (Push to registry or load locally)
 ```
 
 ### Scenario 2: Service Not Routing
@@ -344,7 +345,7 @@ k apply -f deployment.yaml -f service.yaml
 
 ## Verification Checklist
 
-- [ ] Image built and loaded into MicroK8s
+- [ ] Image built and available in cluster
 - [ ] Deployment created with 2 replicas
 - [ ] Pods are Running
 - [ ] Service created (ClusterIP)
