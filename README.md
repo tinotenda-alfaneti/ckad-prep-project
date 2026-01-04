@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-This repository contains **complete, working solutions** for a 15-day CKAD preparation journey.
+This repository contains **complete, working solutions** for a CKAD preparation journey.
 
 ### Prerequisites
 - Kubernetes cluster (local or cloud) with kubectl configured
@@ -13,21 +13,6 @@ This repository contains **complete, working solutions** for a 15-day CKAD prepa
 1. **Try each day yourself first** (recommended)
 2. **Compare with the solution** in the corresponding day folder
 3. **Understand the concepts** before moving forward
-
-### Setup (Day 1)
-
-```bash
-# Ensure your cluster has DNS, storage, and ingress controllers enabled
-# (These are typically available in standard Kubernetes clusters)
-
-# Create kubectl alias (add to ~/.bashrc)
-alias k=kubectl
-
-# Create namespaces
-kubectl create namespace dev
-kubectl create namespace prod
-kubectl create namespace ops
-```
 
 ---
 
@@ -202,13 +187,3 @@ livenessProbe:
 ```
 
 ---
-
-## Next Steps
-
-1. Complete Day 1 setup
-2. Work through each day **in order**
-3. When stuck, check the solution
-4. **Retype** manifests (don't copy-paste)
-5. Delete and recreate to build speed
-
-Good luck! 🚀
