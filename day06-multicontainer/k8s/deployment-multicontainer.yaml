@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-multi
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-multi
+  template:
+    metadata:
+      labels:
+        app: worker-multi
+    spec:
+      initContainers:
+      # Wait for Redis to be available
+      - name: wait-redis
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Checking Redis availability..."
+          until nc -z redis 6379; do
+            echo "Waiting for redis:6379..."
+            sleep 2
+          done
+          echo "Redis is ready!"
+      
+      containers:
+      # Main worker container
+      - name: worker
+        image: worker:v1
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: worker-config
+        env:
+        - name: WORKER_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log
+        - name: output
+          mountPath: /data
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      
+      # Sidecar: Log tailer
+      - name: log-tailer
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Log tailer started"
+          touch /logs/worker.log
+          tail -f /logs/worker.log
+        volumeMounts:
+        - name: shared-logs
+          mountPath: /logs
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "50m"
+          limits:
+            memory: "64Mi"
+            cpu: "100m"
+      
+      volumes:
+      - name: shared-logs
+        emptyDir: {}
+      - name: output
+        emptyDir: {}

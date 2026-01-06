@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: worker-with-init
+  namespace: dev
+  labels:
+    app: worker
+spec:
+  initContainers:
+  # Init container 1: Wait for Redis
+  - name: wait-for-redis
+    image: busybox:1.36
+    command:
+    - sh
+    - -c
+    - |
+      echo "Waiting for Redis to be ready..."
+      until nc -z redis 6379; do
+        echo "Redis not available, waiting..."
+        sleep 2
+      done
+      echo "Redis is ready!"
+  
+  # Init container 2: Pre-populate config
+  - name: setup-config
+    image: busybox:1.36
+    command:
+    - sh
+    - -c
+    - |
+      echo "Setting up configuration..."
+      echo "worker_id=$(date +%s)" > /config/worker.conf
+      echo "Config created!"
+    volumeMounts:
+    - name: config
+      mountPath: /config
+  
+  containers:
+  # Main application container
+  - name: worker
+    image: worker:v1
+    imagePullPolicy: Never
+    envFrom:
+    - configMapRef:
+        name: worker-config
+    volumeMounts:
+    - name: config
+      mountPath: /config
+    - name: output
+      mountPath: /data
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+  
+  volumes:
+  - name: config
+    emptyDir: {}
+  - name: output
+    emptyDir: {}

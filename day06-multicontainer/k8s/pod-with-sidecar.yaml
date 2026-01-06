@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: worker-with-sidecar
+  namespace: dev
+  labels:
+    app: worker
+spec:
+  containers:
+  # Main application container
+  - name: worker
+    image: worker:v1
+    imagePullPolicy: Never
+    envFrom:
+    - configMapRef:
+        name: worker-config
+    volumeMounts:
+    - name: logs
+      mountPath: /var/log/worker
+    - name: output
+      mountPath: /data
+    # Modified to log to file
+    command:
+    - sh
+    - -c
+    - |
+      python -u worker.py 2>&1 | tee /var/log/worker/app.log
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+  
+  # Sidecar: Log processor
+  - name: log-processor
+    image: busybox:1.36
+    command:
+    - sh
+    - -c
+    - |
+      echo "Log processor started"
+      while true; do
+        if [ -f /logs/app.log ]; then
+          # Count lines every 10 seconds
+          LINES=$(wc -l < /logs/app.log)
+          echo "[LOG-PROCESSOR] Total log lines: $LINES"
+        fi
+        sleep 10
+      done
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "50m"
+      limits:
+        memory: "64Mi"
+        cpu: "100m"
+  
+  volumes:
+  - name: logs
+    emptyDir: {}
+  - name: output
+    emptyDir: {}
