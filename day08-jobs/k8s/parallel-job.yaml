@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parallel-processor
+  namespace: dev
+spec:
+  completions: 6  # Total successful completions needed
+  parallelism: 2  # Run 2 pods at a time
+  template:
+    spec:
+      containers:
+      - name: processor
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Processing batch $(hostname)..."
+          sleep $(( RANDOM % 10 + 5 ))
+          echo "Batch complete!"
+      restartPolicy: OnFailure
+  backoffLimit: 4
