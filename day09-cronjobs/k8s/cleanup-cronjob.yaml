@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-cleanup
+  namespace: dev
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cleanup
+            image: redis:7-alpine
+            command:
+            - sh
+            - -c
+            - |
+              echo "Starting cleanup at $(date)..."
+              # Delete keys older than 7 days (example)
+              redis-cli -h redis --scan --pattern "temp:*" | xargs redis-cli -h redis DEL || true
+              echo "Cleanup completed at $(date)"
+          restartPolicy: OnFailure
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 86400  # Clean up job after 24h
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid  # Don't start if previous job still running
