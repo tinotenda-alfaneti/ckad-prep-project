@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-worker-to-redis
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: redis  # Apply to Redis pods
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: worker  # Allow from worker pods
+    ports:
+    - protocol: TCP
+      port: 6379
