@@ -318,11 +318,3 @@ k replace --force -f file.yaml
 4. **Logs show application errors, describe shows Kubernetes errors**
 5. **Service issues = check endpoints**
 6. **Always verify labels and selectors match**
-
----
-
-## Next: Day 15
-
-Final CKAD simulation - timed challenges!
-
-**Estimated time:** Variable (practice!)
