@@ -181,10 +181,3 @@ k exec -it deployment/worker -n dev -- nc -zv event-api 80
 5. **Selectors**: podSelector, namespaceSelector, ipBlock
 6. **Exam tip**: NetworkPolicies are namespace-scoped
 
----
-
-## Next: Day 12
-
-Tomorrow: **Security Contexts**
-
-**Estimated time:** 30 minutes
